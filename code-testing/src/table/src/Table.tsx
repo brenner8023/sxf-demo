@@ -1,8 +1,8 @@
 
 import { toRef, computed, defineComponent, provide } from '@vue/composition-api';
 import { tableProps, TablePublicProps } from './types';
-import { columnInjectKey, slotInjectKey, pagingInjectKey, sorterInjectKey } from './const';
-import { useSorter, usePaging, useDataSource } from './hooks';
+import { slotInjectKey, pagingInjectKey, sorterInjectKey, columnInjectKey } from './const';
+import { useSorter, usePaging, useDataSource, useTableColumn } from './hooks';
 
 import TableHeader from './components/TableHeader';
 import TableBody from './components/TableBody';
@@ -14,25 +14,21 @@ export default defineComponent<TablePublicProps>({
   name: 'Table',
   props: tableProps,
   setup(props, { slots }) {
-    const columns = toRef(props, 'columns');
-    const tableData = toRef(props, 'data');
     const tableOpts = toRef(props, 'options');
 
     const {
+      columns,
       sortTableData,
-    } = useDataSource(tableData);
+      tableData,
+      isTableEmpty,
+    } = useDataSource(props);
+    provide(columnInjectKey, { columns });
 
     const {
       isAsc,
       selectedColIndex,
       setSorterState,
-    } = useSorter(sortTableData, columns);
-
-    const pagingConfig = computed(() => props.plugin?.paging);
-
-    provide(pagingInjectKey, {
-      pagingState: usePaging(pagingConfig)
-    });
+    } = useSorter(sortTableData);
 
     provide(sorterInjectKey, {
       isAsc,
@@ -40,7 +36,11 @@ export default defineComponent<TablePublicProps>({
       setSorterState,
     });
 
-    provide(columnInjectKey, { columns });
+    const pagingConfig = computed(() => props.plugin?.paging);
+    provide(pagingInjectKey, {
+      pagingState: usePaging(pagingConfig),
+    });
+
     provide(slotInjectKey, { tableSlots: slots });
 
     const tableStyle = computed(() => {
@@ -54,7 +54,7 @@ export default defineComponent<TablePublicProps>({
         <div class="sxf-table-wrap" style={tableStyle.value}>
           <table class="sxf-table">
             <TableHeader></TableHeader>
-            <TableBody tableData={tableData.value}></TableBody>
+            <TableBody tableData={tableData.value} isTableEmpty={isTableEmpty.value}></TableBody>
           </table>
           <TableFooter pagingConfig={pagingConfig.value} />
         </div>

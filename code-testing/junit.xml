@@ -1,7 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="1" failures="0" errors="0" time="4.161">
-  <testsuite name="Table" errors="0" failures="0" skipped="0" timestamp="2021-10-30T01:06:34" time="2.127" tests="1">
-    <testcase classname="Table render" name="Table render" time="0.035">
+<testsuites name="jest tests" tests="10" failures="0" errors="0" time="4.847">
+  <testsuite name="hooks" errors="0" failures="0" skipped="0" timestamp="2021-10-31T08:37:39" time="1.333" tests="5">
+    <testcase classname="hooks useDataSource" name="hooks useDataSource" time="0.009">
+    </testcase>
+    <testcase classname="hooks useSorter" name="hooks useSorter" time="0.011">
+    </testcase>
+    <testcase classname="hooks useLRPaging" name="hooks useLRPaging" time="0.003">
+    </testcase>
+    <testcase classname="hooks usePaging不开启分页" name="hooks usePaging不开启分页" time="0.002">
+    </testcase>
+    <testcase classname="hooks usePaging" name="hooks usePaging" time="0.007">
+    </testcase>
+  </testsuite>
+  <testsuite name="Table" errors="0" failures="0" skipped="0" timestamp="2021-10-31T08:37:39" time="1.772" tests="5">
+    <testcase classname="Table render" name="Table render" time="0.033">
+    </testcase>
+    <testcase classname="Table custom slot" name="Table custom slot" time="0.031">
+    </testcase>
+    <testcase classname="Table paging" name="Table paging" time="0.027">
+    </testcase>
+    <testcase classname="Table table sort" name="Table table sort" time="0.036">
+    </testcase>
+    <testcase classname="Table table body" name="Table table body" time="0.003">
     </testcase>
   </testsuite>
 </testsuites>

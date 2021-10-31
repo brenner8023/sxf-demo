@@ -9,7 +9,7 @@ export default defineComponent({
   props: {
     rowData: {
       type: Object,
-      default: () => ({}),
+      default: undefined,
     },
   },
   setup (props) {

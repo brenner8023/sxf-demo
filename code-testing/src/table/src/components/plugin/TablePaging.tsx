@@ -25,22 +25,22 @@ export default defineComponent({
     };
 
     return () => {
-      return <div class="sxf-table-paging">
+      return <div class="sxf-paging">
         <div>
           total：{ pageTotal.value }
         </div>
         <div
-          class="sxf-table-paging__arrow sxf-table-paging__arrow--left"
+          class="sxf-paging__arrow sxf-paging__arrow--left"
           onClick={onLeftClick}></div>
         <input
-          class="sxf-table-paging__input"
+          class="sxf-paging__input"
           type="text"
           value={currentPage.value}
           onChange={onInputChange} />
         页
-        <div class="sxf-table-paging__arrow sxf-table-paging__arrow--right" onClick={onRightClick}></div>
+        <div class="sxf-paging__arrow sxf-paging__arrow--right" onClick={onRightClick}></div>
         每页
-        <select name="" id="" value={pageLimit.value} onChange={onSelectChange}>
+        <select class="sxf-paging-select" name="" id="" value={pageLimit.value} onChange={onSelectChange}>
           {
             pageSize.value.map(item => <option>{ item }</option>)
           }

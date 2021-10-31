@@ -7,23 +7,23 @@ export default defineComponent({
   props: {
     rowData: {
       type: Object,
-      default: () => ({}),
+      default: undefined,
     },
     currentColumn: {
       type: Object as PropType<TableColumn>,
-      default: () => ({}),
+      default: undefined,
     },
   },
   setup (props) {
 
     const {
       tableSlots
-    } = inject(slotInjectKey) || {};
+    } = inject(slotInjectKey)!;
 
     return () => {
       return <td>
       {
-        props.rowData[props.currentColumn.field] ??
+        props.rowData?.[props.currentColumn?.field] ??
           tableSlots?.[props.currentColumn.field]?.({ record: props.rowData })
       }
      </td>;

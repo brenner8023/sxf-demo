@@ -4,7 +4,9 @@ exports[`Table render 1`] = `
 "<div class=\\"sxf-table-wrap\\" style=\\"height: auto;\\">
   <table class=\\"sxf-table\\">
     <thead></thead>
-    <tbody><span>空状态</span></tbody>
+    <tbody>
+      <div class=\\"sxf-empty\\">空状态</div>
+    </tbody>
   </table>
   <div class=\\"sxf-table-footer\\"></div>
 </div>"

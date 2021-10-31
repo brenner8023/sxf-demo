@@ -70,7 +70,7 @@ export type PagingPlugin = false | {
 
   /**
    * @description 配置每页的数量上限
-   * @default [5,6]
+   * @default [20,50]
    */
   pageSize: number[];
 

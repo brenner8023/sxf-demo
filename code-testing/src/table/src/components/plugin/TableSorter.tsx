@@ -14,7 +14,7 @@ export default defineComponent({
       selectedColIndex,
       isAsc,
       setSorterState,
-    } = inject(sorterInjectKey) || {};
+    } = inject(sorterInjectKey)!;
 
     const isSelected = computed(() => selectedColIndex.value === props.colIndex);
     const ascClass = computed(() =>

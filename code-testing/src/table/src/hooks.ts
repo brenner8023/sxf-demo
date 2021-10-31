@@ -1,34 +1,58 @@
 
-import { computed, ref, Ref, watch, getCurrentInstance } from '@vue/composition-api';
-import type { PagingPlugin, ValueOf, TableColumn } from './types';
+import {
+  computed,
+  ref,
+  Ref,
+  watch,
+  getCurrentInstance,
+  toRef,
+} from '@vue/composition-api';
+import type { PagingPlugin, ValueOf, TablePublicProps } from './types';
 import { sortType } from './const';
 
 type SortType = ValueOf<typeof sortType>;
-type SortDataFn = (sortFn: (...args: any[]) => number) => void;
 
-export const useDataSource = (tableData: Ref<any[]>) => {
-  const sortTableData: SortDataFn = sortFn => {
-    tableData.value.sort(sortFn);
+const getSortFn = (newDirection: SortType, sortFn: (...args: any[]) => number) => {
+  return (...args: any[]) => {
+    return sortFn(...args) * (newDirection === sortType.asc ? 1 : -1);
   };
+};
+
+export const useDataSource = (props: TablePublicProps) => {
+  const tableData = toRef(props, 'data');
+  const columns = toRef(props, 'columns');
+  const sortTableData = (direction: SortType, targetIdx: number) => {
+    const target = columns.value.find((col, idx: number) => idx === targetIdx);
+    if (target) {
+      const sortFn = getSortFn(direction, target.sortFn!);
+      tableData.value.sort(sortFn);
+    }
+  };
+  const isTableEmpty = computed(() => !(Array.isArray(tableData.value) && tableData.value.length > 0));
 
   return {
+    columns,
+    isTableEmpty,
+    tableData,
     sortTableData,
   };
 };
 
-export const useSorter = (sortData: SortDataFn, columns: Ref<TableColumn[]>) => {
+export const useSorter = (sortDataFn: (...args: any[]) => void) => {
   const currentDirection = ref<SortType>(sortType.asc);
   const selectedColIndex = ref(-1);
   const setSorterState = (type: SortType, colIndex: number) => {
-    currentDirection.value = type;
-    selectedColIndex.value = colIndex;
+    if (currentDirection.value !== type) {
+      currentDirection.value = type;
+    }
+    if (selectedColIndex.value !== colIndex) {
+      selectedColIndex.value = colIndex;
+    }
   };
   const isAsc = computed(() => currentDirection.value === sortType.asc);
 
-  watch([selectedColIndex, currentDirection], ([newVal, newArrow]) => {
-    const target = columns.value.find((col: any, idx: number) => idx === newVal) as TableColumn;
-    const sortFn = (...args: any[]) => target.sortFn!(...args) * (newArrow === sortType.asc ? 1 : -1);
-    target && sortData(sortFn);
+  watch<[Ref<number>, Ref<SortType>]>([selectedColIndex, currentDirection], ([newVal, newDirection]) => {
+    sortDataFn(newDirection, newVal);
   });
 
   return {
@@ -38,7 +62,7 @@ export const useSorter = (sortData: SortDataFn, columns: Ref<TableColumn[]>) => 
   };
 };
 
-const useLRPaging = (pageStart: Ref<number>, pageLimit: Ref<number>, pageTotal: Ref<number>, emitPagingChange: () => void) => {
+export const useLRPaging = (pageStart: Ref<number>, pageLimit: Ref<number>, pageTotal: Ref<number>, emitPagingChange: () => void) => {
   const isLeftDisable = computed(() => pageStart.value === 1);
   const isRightDisable = computed(() => pageStart.value - 1 + pageLimit.value >= pageTotal.value);
 
@@ -58,8 +82,6 @@ const useLRPaging = (pageStart: Ref<number>, pageLimit: Ref<number>, pageTotal: 
   };
 
   return {
-    isLeftDisable,
-    isRightDisable,
     onLeftClick,
     onRightClick,
   };
@@ -87,12 +109,7 @@ export const usePaging = (pagingConfig: Ref<PagingPlugin | undefined>) => {
   };
 
   /**当前页 */
-  const currentPage = computed<number>({
-    get: () => Math.ceil(pageStart.value / pageLimit.value),
-    set: (newPage) => {
-      pageStart.value = (newPage - 1 ) * pageLimit.value + 1;
-    },
-  });
+  const currentPage = computed(() => Math.ceil(pageStart.value / pageLimit.value));
 
   /**跳转到指定页 */
   const onJumpPage = (currPage: number) => {
@@ -110,11 +127,9 @@ export const usePaging = (pagingConfig: Ref<PagingPlugin | undefined>) => {
     ...useLRPaging(pageStart, pageLimit, pageTotal, emitPagingChange),
     pageSize,
     currentPage,
-    pageStart,
     pageLimit,
     setPageLimit,
     pageTotal,
     onJumpPage,
-    emitPagingChange,
   };
 };
