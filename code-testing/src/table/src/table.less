@@ -1,0 +1,110 @@
+
+.sxf-table-wrap {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+  overflow: auto;
+}
+
+.sxf-table {
+  min-width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+
+  th {
+    height: 52px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
+.sxf-table__header {
+  height: 52px;
+  display: flex;
+  align-items: center;
+}
+
+.sxf-table__row {
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+
+  td {
+    height: 52px;
+    box-sizing: border-box;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
+.sxf-table-footer {
+  padding: 8px;
+}
+
+.sxf-table-paging {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  margin-right: 32px;
+
+  &__input {
+    width: 40px;
+    border: 1px solid green;
+    margin-right: 4px;
+  }
+
+  &__arrow {
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+    background-size: 14px 14px;
+    background-position: center;
+    cursor: pointer;
+
+    &--left {
+      margin-left: 32px;
+      margin-right: 16px;
+      background-image: url('../img/left.svg');
+    }
+
+    &--right {
+      background-image: url('../img/right.svg');
+      margin-left: 16px;
+      margin-right: 32px;
+    }
+  }
+}
+
+.sxf-table-sorter {
+  width: 14px;
+  height: 14px;
+  background-size: 14px;
+  margin-left: 4px;
+
+  &__asc {
+    background-image: url('../img/sort-asc.svg');
+
+    &:hover {
+      cursor: pointer;
+      background-image: url('../img/sort-asc-selected.svg');
+    }
+
+    &--selected {
+      background-image: url('../img/sort-asc-selected.svg');
+    }
+  }
+
+  &__desc {
+    background-image: url('../img/sort-desc.svg');
+
+    &:hover {
+      cursor: pointer;
+      background-image: url('../img/sort-desc-selected.svg');
+    }
+
+    &--selected {
+      background-image: url('../img/sort-desc-selected.svg');
+    }
+  }
+}

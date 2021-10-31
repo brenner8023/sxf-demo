@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Table render 1`] = `
+"<div class=\\"sxf-table-wrap\\" style=\\"height: auto;\\">
+  <table class=\\"sxf-table\\">
+    <thead></thead>
+    <tbody><span>空状态</span></tbody>
+  </table>
+  <div class=\\"sxf-table-footer\\"></div>
+</div>"
+`;
