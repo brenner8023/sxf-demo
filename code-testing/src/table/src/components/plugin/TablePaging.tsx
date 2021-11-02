@@ -31,18 +31,20 @@ export default defineComponent({
         </div>
         <div
           class="sxf-paging__arrow sxf-paging__arrow--left"
+          utid="paging-left"
           onClick={onLeftClick}></div>
         <input
           class="sxf-paging__input"
           type="text"
           value={currentPage.value}
+          utid="paging-input"
           onChange={onInputChange} />
         页
-        <div class="sxf-paging__arrow sxf-paging__arrow--right" onClick={onRightClick}></div>
+        <div class="sxf-paging__arrow sxf-paging__arrow--right" onClick={onRightClick} utid="paging-right"></div>
         每页
-        <select class="sxf-paging-select" name="" id="" value={pageLimit.value} onChange={onSelectChange}>
+        <select class="sxf-paging-select" name="" id="" value={pageLimit.value} onChange={onSelectChange} utid="paging-select">
           {
-            pageSize.value.map(item => <option>{ item }</option>)
+            pageSize.value.map((item: number) => <option>{ item }</option>)
           }
         </select>
         条

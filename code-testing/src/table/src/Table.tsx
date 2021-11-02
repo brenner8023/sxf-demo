@@ -2,7 +2,7 @@
 import { toRef, computed, defineComponent, provide } from '@vue/composition-api';
 import { tableProps, TablePublicProps } from './types';
 import { slotInjectKey, pagingInjectKey, sorterInjectKey, columnInjectKey } from './const';
-import { useSorter, usePaging, useDataSource, useTableColumn } from './hooks';
+import { useSorter, usePaging, useDataSource, useSortColumn } from './hooks';
 
 import TableHeader from './components/TableHeader';
 import TableBody from './components/TableBody';
@@ -26,14 +26,22 @@ export default defineComponent<TablePublicProps>({
 
     const {
       isAsc,
+      currentDirection,
+      setSortDirection,
+    } = useSorter();
+    const {
       selectedColIndex,
-      setSorterState,
-    } = useSorter(sortTableData);
+      changeSortColumn,
+    } = useSortColumn(
+      currentDirection,
+      setSortDirection,
+      sortTableData,
+    );
 
     provide(sorterInjectKey, {
       isAsc,
       selectedColIndex,
-      setSorterState,
+      changeSortColumn,
     });
 
     const pagingConfig = computed(() => props.plugin?.paging);
@@ -41,13 +49,12 @@ export default defineComponent<TablePublicProps>({
       pagingState: usePaging(pagingConfig),
     });
 
+    /**自定义插槽注入到td组件中 */
     provide(slotInjectKey, { tableSlots: slots });
 
-    const tableStyle = computed(() => {
-      return {
-        height: tableOpts.value?.height,
-      };
-    });
+    const tableStyle = computed(() => ({
+      height: tableOpts.value?.height,
+    }));
 
     return () => {
       return (

@@ -1,6 +1,6 @@
 
 import { ref } from '@vue/composition-api'
-import { useDataSource, useSorter, usePaging, useLRPaging } from '../table/src/hooks'
+import { useDataSource, useSorter, usePaging, useLRPaging, useSortColumn } from '../table/src/hooks'
 
 describe('hooks', () => {
   const mockTimer = (times = 0) => new Promise(resolve => setTimeout(resolve, times))
@@ -45,54 +45,61 @@ describe('hooks', () => {
     })
   })
 
-  test('useSorter', async () => {
+  test('useSortColumn', async () => {
+    const currDirection = ref('asc')
+    const setDirection = jest.fn()
     const sortFn = jest.fn()
     const {
       selectedColIndex,
-      setSorterState,
+      changeSortColumn,
+    } = useSortColumn(
+      currDirection,
+      setDirection,
+      sortFn,
+    );
+
+    changeSortColumn('desc', 5);
+    expect(setDirection).toBeCalledTimes(1);
+    expect(selectedColIndex.value).toBe(5);
+
+    await mockTimer();
+    expect(sortFn).toBeCalledTimes(1);
+  })
+
+  test('useSorter', () => {
+    const {
+      currentDirection,
+      setSortDirection,
       isAsc,
-    } = useSorter(sortFn)
+    } = useSorter()
 
     expect(isAsc.value).toBe(true)
-    expect(selectedColIndex.value).toBe(-1)
 
-    setSorterState('desc', 2)
+    setSortDirection('desc', 2)
     expect(isAsc.value).toBe(false)
-    expect(selectedColIndex.value).toBe(2)
-
-    await mockTimer()
-    expect(sortFn).toBeCalledTimes(1)
-
-    setSorterState('desc', 2)
-    await mockTimer()
-    expect(sortFn).toBeCalledTimes(1)
+    expect(currentDirection.value).toBe('desc')
   })
 
   test('useLRPaging', () => {
-    const changeFn = jest.fn()
     const start = ref(1)
     const limit = ref(20)
     const {
       onLeftClick,
       onRightClick,
-    } = useLRPaging(start, limit, ref(100), changeFn)
+    } = useLRPaging(start, limit, ref(100))
 
     onLeftClick()
     expect(start.value).toBe(1)
-    expect(changeFn).toHaveBeenCalledTimes(0)
 
     onRightClick()
     expect(start.value).toBe(21)
-    expect(changeFn).toHaveBeenCalledTimes(1)
 
     start.value = 81
     onRightClick()
     expect(start.value).toBe(81)
-    expect(changeFn).toHaveBeenCalledTimes(1)
 
     onLeftClick()
     expect(start.value).toBe(61)
-    expect(changeFn).toHaveBeenCalledTimes(2)
   })
 
   test('usePaging不开启分页', () => {

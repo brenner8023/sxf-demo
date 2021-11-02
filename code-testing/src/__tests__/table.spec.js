@@ -88,9 +88,10 @@ describe('Table', () => {
       },
     })
 
-    await wrapper.find('.sxf-paging-select').trigger('change')
+    await wrapper.find('.sxf-paging-select').setValue(6)
     expect(pagingChange).toHaveBeenCalledTimes(1)
 
+    await wrapper.find('.sxf-paging__input').setValue(2)
     await wrapper.find('.sxf-paging__input').trigger('change')
     expect(pagingChange).toHaveBeenCalledTimes(2)
   })
@@ -104,10 +105,10 @@ describe('Table', () => {
     })
 
     await wrapper.find('.sxf-table-sorter__desc').trigger('click')
-    expect(wrapper.find('.sxf-table-sorter__desc').contains('.sxf-table-sorter__desc--selected')).toBe(true)
+    expect(wrapper.find('.sxf-table-sorter__desc.sxf-table-sorter__desc--selected').exists()).toBe(true)
 
     await wrapper.find('.sxf-table-sorter__asc').trigger('click')
-    expect(wrapper.find('.sxf-table-sorter__asc').contains('.sxf-table-sorter__asc--selected')).toBe(true)
+    expect(wrapper.find('.sxf-table-sorter__asc.sxf-table-sorter__asc--selected').exists()).toBe(true)
   })
 
   test('table body', () => {

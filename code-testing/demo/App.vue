@@ -1,8 +1,8 @@
 <template>
   <div class="demo-app-wrap">
-    <DemoBase />
+    <DemoBase utid="demo-1" />
     <DemoAction />
-    <DemoSort />
+    <DemoSort utid="demo-sort" />
     <DemoPaging />
     <DemoAll />
     <TestTable :columns="columns" />

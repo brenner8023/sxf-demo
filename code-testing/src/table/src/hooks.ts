@@ -8,20 +8,23 @@ import {
   toRef,
 } from '@vue/composition-api';
 import type { PagingPlugin, ValueOf, TablePublicProps } from './types';
-import { sortType } from './const';
+import { sortDirection } from './const';
 
-type SortType = ValueOf<typeof sortType>;
+type SortDirection = ValueOf<typeof sortDirection>;
+type SortDirectionFn = (type: SortDirection) => void;
 
-const getSortFn = (newDirection: SortType, sortFn: (...args: any[]) => number) => {
+const getSortFn = (newDirection: SortDirection, sortFn: (...args: any[]) => number) => {
   return (...args: any[]) => {
-    return sortFn(...args) * (newDirection === sortType.asc ? 1 : -1);
+
+    // 正序乘以1，倒序乘以-1
+    return sortFn(...args) * (newDirection === sortDirection.asc ? 1 : -1);
   };
 };
 
 export const useDataSource = (props: TablePublicProps) => {
   const tableData = toRef(props, 'data');
   const columns = toRef(props, 'columns');
-  const sortTableData = (direction: SortType, targetIdx: number) => {
+  const sortTableData = (direction: SortDirection, targetIdx: number) => {
     const target = columns.value.find((col, idx: number) => idx === targetIdx);
     if (target) {
       const sortFn = getSortFn(direction, target.sortFn!);
@@ -38,31 +41,48 @@ export const useDataSource = (props: TablePublicProps) => {
   };
 };
 
-export const useSorter = (sortDataFn: (...args: any[]) => void) => {
-  const currentDirection = ref<SortType>(sortType.asc);
-  const selectedColIndex = ref(-1);
-  const setSorterState = (type: SortType, colIndex: number) => {
-    if (currentDirection.value !== type) {
-      currentDirection.value = type;
-    }
-    if (selectedColIndex.value !== colIndex) {
-      selectedColIndex.value = colIndex;
-    }
-  };
-  const isAsc = computed(() => currentDirection.value === sortType.asc);
+/**列排序 */
+export const useSortColumn = (
+  currentDirection: Ref<SortDirection>,
+  setSortDirection: SortDirectionFn,
+  sortDataFn: (...args: any[]) => void
+) => {
 
-  watch<[Ref<number>, Ref<SortType>]>([selectedColIndex, currentDirection], ([newVal, newDirection]) => {
+  const selectedColIndex = ref(-1);
+  const changeSortColumn = (type: SortDirection, colIndex: number) => {
+    setSortDirection(type);
+    selectedColIndex.value = colIndex;
+  };
+
+  watch<[Ref<number>, Ref<SortDirection>]>([selectedColIndex, currentDirection], ([newVal, newDirection]) => {
     sortDataFn(newDirection, newVal);
   });
 
   return {
     selectedColIndex,
-    setSorterState,
+    changeSortColumn,
+  };
+};
+
+/**排序 */
+export const useSorter = () => {
+  const currentDirection = ref<SortDirection>(sortDirection.asc);
+
+  const setSortDirection: SortDirectionFn = (type) => {
+    currentDirection.value = type;
+  };
+
+  const isAsc = computed(() => currentDirection.value === sortDirection.asc);
+
+  return {
+    currentDirection,
+    setSortDirection,
     isAsc,
   };
 };
 
-export const useLRPaging = (pageStart: Ref<number>, pageLimit: Ref<number>, pageTotal: Ref<number>, emitPagingChange: () => void) => {
+/**左翻右翻 */
+export const useLRPaging = (pageStart: Ref<number>, pageLimit: Ref<number>, pageTotal: Ref<number>) => {
   const isLeftDisable = computed(() => pageStart.value === 1);
   const isRightDisable = computed(() => pageStart.value - 1 + pageLimit.value >= pageTotal.value);
 
@@ -71,14 +91,12 @@ export const useLRPaging = (pageStart: Ref<number>, pageLimit: Ref<number>, page
       return;
     }
     pageStart.value -= pageLimit.value;
-    emitPagingChange();
   };
   const onRightClick = () => {
     if (isRightDisable.value) {
       return;
     }
     pageStart.value += pageLimit.value;
-    emitPagingChange();
   };
 
   return {
@@ -103,9 +121,12 @@ export const usePaging = (pagingConfig: Ref<PagingPlugin | undefined>) => {
   /**每页的长度上限 */
   const pageLimit = ref(pageSize.value[0]);
 
+  watch([pageStart, pageLimit], () => {
+    emitPagingChange();
+  })
+
   const setPageLimit = (newVal: string | number) => {
     pageLimit.value = +newVal;
-    emitPagingChange();
   };
 
   /**当前页 */
@@ -114,7 +135,6 @@ export const usePaging = (pagingConfig: Ref<PagingPlugin | undefined>) => {
   /**跳转到指定页 */
   const onJumpPage = (currPage: number) => {
     pageStart.value = (currPage - 1) * pageLimit.value + 1;
-    emitPagingChange();
   };
   const emitPagingChange = () => {
     vm?.emit('paging-change', {
@@ -124,7 +144,7 @@ export const usePaging = (pagingConfig: Ref<PagingPlugin | undefined>) => {
   };
 
   return {
-    ...useLRPaging(pageStart, pageLimit, pageTotal, emitPagingChange),
+    ...useLRPaging(pageStart, pageLimit, pageTotal),
     pageSize,
     currentPage,
     pageLimit,

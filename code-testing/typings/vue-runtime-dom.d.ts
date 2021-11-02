@@ -239,6 +239,8 @@ export type StyleValue = string | CSSProperties | Array<StyleValue>
 export interface HTMLAttributes extends AriaAttributes, EventHandlers<Events> {
   innerHTML?: string
 
+  utid?: string
+
   class?: any
   style?: StyleValue
 

@@ -7,7 +7,7 @@ export const sorterInjectKey = Symbol('sorter');
 
 export const pagingInjectKey = Symbol('paging');
 
-export const sortType = {
+export const sortDirection = {
   asc: 'asc',
   desc:  'desc',
 } as const;

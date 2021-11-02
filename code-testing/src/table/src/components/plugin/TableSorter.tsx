@@ -1,5 +1,5 @@
 import { defineComponent, computed, inject } from "@vue/composition-api";
-import { sorterInjectKey, sortType } from '../../const';
+import { sorterInjectKey, sortDirection } from '../../const';
 
 export default defineComponent({
   name: 'TableSorter',
@@ -13,7 +13,7 @@ export default defineComponent({
     const {
       selectedColIndex,
       isAsc,
-      setSorterState,
+      changeSortColumn,
     } = inject(sorterInjectKey)!;
 
     const isSelected = computed(() => selectedColIndex.value === props.colIndex);
@@ -23,16 +23,16 @@ export default defineComponent({
     'sxf-table-sorter sxf-table-sorter__desc' + (isSelected.value && !isAsc.value ? ' sxf-table-sorter__desc--selected' : '') );
 
     const onAscClick = () => {
-      setSorterState(sortType.asc, props.colIndex);
+      changeSortColumn(sortDirection.asc, props.colIndex);
     };
     const onDescClick = () => {
-      setSorterState(sortType.desc, props.colIndex);
+      changeSortColumn(sortDirection.desc, props.colIndex);
     };
 
     return () => {
       return <div>
-        <div class={ascClass.value} onClick={onAscClick}></div>
-        <div class={descClass.value} onClick={onDescClick}></div>
+        <div class={ascClass.value} onClick={onAscClick} utid={`asc-${props.colIndex}`}></div>
+        <div class={descClass.value} onClick={onDescClick} utid={`desc-${props.colIndex}`}></div>
       </div>;
     };
   }
