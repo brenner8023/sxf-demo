@@ -266,31 +266,32 @@ dddd：
 
 ---
 
-vitest和cypress的一些对比：
+cypress的一些实践：
 
 ```js
-// 模拟某个函数实现
-const beforeClose = vi.fn().mockResolvedValue(false)
-expect(beforeClose).toHaveBeenCalledTimes(1)
-beforeClose.mockResolvedValue(true)
-// cypress
+// 模拟返回false的函数
 const beforeClose = cy.stub().returns(false) // cy.spy(() => false)
 expect(beforeClose).to.be.calledOnce
-beforeClose.returns(true)
+beforeClose.returns(true) // 将该函数改为模拟返回true
 
-// 模拟延时
-const sleep = (ms) => new Promise(resolve => setTimeout(() => resolve(), ms))
-await sleep(300)
-// cypress
-cy.wait(300)
+cy.wait(300) // 模拟延时
 
-// 判断元素是否可见
-const isShow = (wrapper) => {
-  return window.getComputedStyle(wrapper.element).display !== 'none'
-}
-expect(isShow(wrapper.find('.ix-back-top'))).toBe(false)
-// cypress
-cy.get('.ix-back-top').should('not.be.visible')
+// 获取元素
+cy.get('.ix-back-top').children('span') // 获取孩子元素
+cy.get('li').find('a') // 获取后代元素
+cy.get('li.active').closest('ul') // 获取最近的祖先元素
+cy.get('li.active').parent('ul') // 获取父亲元素
+cy.get('.ix-button').eq(1) // 获取第二个.ix-button元素
+cy.get('li').filter('.active') // 获取li.active元素，可直接写成cy.get('li.active')
+
+// 表单
+cy.get('input').type('1.1.1.0')
+cy.get('input').clear()
+cy.get('input').focus()
+cy.get('input').blur()
+cy.get('input[type="checkbox"]').check().should('be.checked')
+cy.get('input[type="checkbox"]').uncheck().should('not.be.checked')
+cy.get('select').select('apple')
 ```
 
 ---
